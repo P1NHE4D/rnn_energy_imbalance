@@ -1,7 +1,7 @@
 dataset:
   train: "datasets/no1_train.csv"
   test: "datasets/no1_validation.csv"
-  input_steps: 72
+  input_steps: 144
   batch_size: 32
 model:
   visualize: false
@@ -11,8 +11,8 @@ model:
   dropout: 0
   regularization: "l2"
   reg_rate: 0.01
-  weight_file: "models/test"
-  file_path: "models/test"
+  # weight_file: "models/lstm_6hr_02d"
+  file_path: "models/lstm_12hr_0d_01reg"
 preprocessing:
   subsample: false
   subsampling_rate: 1
