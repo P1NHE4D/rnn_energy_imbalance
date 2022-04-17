@@ -1,15 +1,16 @@
 dataset:
   train: "datasets/no1_train.csv"
   test: "datasets/no1_validation.csv"
-  input_steps: 144
-  batch_size: 1024
+  input_steps: 72
+  batch_size: 32
 model:
   visualize: false
   learning_rate: 0.001
   force_retrain: false
   epochs: 20
-  weight_file: ""
-  file_path: "models/rnn"
+  dropout: 0
+  weight_file: "models/test"
+  file_path: "models/test"
 preprocessing:
   subsample: false
   subsampling_rate: 1

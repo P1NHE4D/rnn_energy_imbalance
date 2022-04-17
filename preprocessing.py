@@ -1,18 +1,21 @@
 import numpy as np
 import pandas as pd
-from keras.preprocessing.timeseries import timeseries_dataset_from_array
 
 
-def construct_dataset(data, input_steps, batch_size):
+def construct_dataset(data, input_steps):
     target_df = data.pop("y")
-    input_data = data[:-input_steps]
-    targets = target_df[input_steps:]
-    return timeseries_dataset_from_array(
-        input_data,
-        targets,
-        sequence_length=input_steps,
-        batch_size=batch_size,
-    )
+    input_data_target = target_df[:-1].to_numpy()
+    input_data = data[:-1].to_numpy()
+    targets = target_df[input_steps:].to_numpy()
+
+    x = []
+    y = []
+    input_y = []
+    for i in range(len(targets)):
+        x.append(input_data[i:i+input_steps])
+        input_y.append(input_data_target[i:i+input_steps])
+        y.append(targets[i])
+    return np.array(x), np.array(y), np.array(input_y)
 
 
 def preprocess_data(config: dict, data: pd.DataFrame):
