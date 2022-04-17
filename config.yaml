@@ -9,6 +9,8 @@ model:
   force_retrain: false
   epochs: 20
   dropout: 0
+  regularization: "l2"
+  reg_rate: 0.01
   weight_file: "models/test"
   file_path: "models/test"
 preprocessing:
