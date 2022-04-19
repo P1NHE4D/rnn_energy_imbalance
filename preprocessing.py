@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from scipy import interpolate
 
 
 def construct_dataset(data, input_steps):
@@ -23,9 +24,15 @@ def preprocess_data(config: dict, data: pd.DataFrame):
 
     subsampling_rate = config.get("subsampling_rate", 1)
     if config.get("subsample", False):
+        print("Subsampling...")
         data = subsample(data.copy(), subsampling_rate)
     if config.get("clamp_values", False):
+        print("Clamping values...")
         data = clamp(data.copy())
+    if config.get("avoid_structural_imbalance", False):
+        print("Computing and subtracting structural imbalance...")
+        data = avoid_structural_imbalance(data.copy())
+    print("Adding selected features...")
     data = add_time_features(
         data.copy(),
         config.get("time_of_day", False),
@@ -39,9 +46,19 @@ def preprocess_data(config: dict, data: pd.DataFrame):
     if config.get("mean_imbalance", False):
         data = add_mean_imbalance(data.copy())
     if config.get("normalize", False):
+        print("Normalizing data...")
         data = normalize(data.copy())
 
     data = data.drop(["start_time", "date", "river"], axis=1)
+    return data
+
+
+def avoid_structural_imbalance(data: pd.DataFrame):
+    production = data.total.to_numpy() + data.flow.to_numpy()
+    x = np.arange(0, len(production))
+    tck = interpolate.splrep(x, production, s=500000)
+    smoothed_production = interpolate.splev(x, tck)
+    data.y -= smoothed_production
     return data
 
 
