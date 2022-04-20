@@ -1,6 +1,6 @@
 from keras.callbacks import Callback
 from keras.models import Model, Sequential
-from keras.layers import SimpleRNN, Dense, LSTM
+from keras.layers import Dense, LSTM
 from keras.regularizers import L1, L2
 from tensorflow import keras
 

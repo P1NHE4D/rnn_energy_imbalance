@@ -56,7 +56,7 @@ def preprocess_data(config: dict, data: pd.DataFrame):
 def avoid_structural_imbalance(data: pd.DataFrame):
     production = data.total.to_numpy() + data.flow.to_numpy()
     x = np.arange(0, len(production))
-    tck = interpolate.splrep(x, production, s=500000)
+    tck = interpolate.splrep(x, production)
     smoothed_production = interpolate.splev(x, tck)
     data.y -= smoothed_production
     return data

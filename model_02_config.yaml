@@ -1,0 +1,28 @@
+num_visualizations: 5
+dataset:
+  train: "datasets/no1_train.csv"
+  test: "datasets/no1_validation.csv"
+  input_steps: 144
+  batch_size: 32
+model:
+  visualize: true
+  learning_rate: 0.001
+  force_retrain: false
+  epochs: 20
+  dropout: 0
+  regularization: "l2"
+  reg_rate: 0.01
+  weight_file: "models/lstm_12hr_0d_01reg_v2"
+  file_path: "models/lstm_12hr_0d_01reg_v2"
+preprocessing:
+  subsample: false
+  subsampling_rate: 1
+  clamp_values: true
+  avoid_structural_imbalance: true
+  time_of_day: true
+  time_of_week: true
+  time_of_year: true
+  prev_imbalance: true
+  imb_prev_day: true
+  mean_imbalance: true
+  normalize: true

@@ -4,11 +4,11 @@ from yaml import safe_load
 from preprocessing import preprocess_data, construct_dataset
 from nn import RNN, LossHistory
 import matplotlib.pyplot as plt
-from scipy import interpolate as inpl
+import argparse
 
 
-def main():
-    with open("config.yaml") as f:
+def main(config_file):
+    with open(config_file) as f:
         config = safe_load(f)
 
     train_df = pd.read_csv(config["dataset"]["train"])
@@ -18,7 +18,10 @@ def main():
 
     # y = train_df.total.to_numpy() + train_df.flow.to_numpy()
     # x = np.arange(0, len(y))
-    # tck = inpl.splrep(x, y, s=500000)
+    # t = time.time()
+    # tck = inpl.splrep(x, y)
+    # t2 = time.time()
+    # print("Duration: {}".format(t2 - t))
     # plt.plot(x, y, 'b')
     # ynew = inpl.splev(x, tck)
     # plt.plot(x, ynew, 'g')
@@ -81,4 +84,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('config', required=True, type=str, help='Config file')
+    args = parser.parse_args()
+    main(args.config)
