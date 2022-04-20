@@ -13,6 +13,8 @@ def main():
 
     train_df = pd.read_csv(config["dataset"]["train"])
     test_df = pd.read_csv(config["dataset"]["test"])
+    train_df.flow = -train_df.flow
+    test_df.flow = -test_df.flow
 
     # y = train_df.total.to_numpy() + train_df.flow.to_numpy()
     # x = np.arange(0, len(y))
