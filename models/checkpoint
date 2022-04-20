@@ -1,2 +1,2 @@
-model_checkpoint_path: "lstm_6hr_0d_02reg"
-all_model_checkpoint_paths: "lstm_6hr_0d_02reg"
+model_checkpoint_path: "lstm_12hr_0d_01reg_v2"
+all_model_checkpoint_paths: "lstm_12hr_0d_01reg_v2"
