@@ -12,8 +12,8 @@ model:
   dropout: 0
   regularization: "l2"
   reg_rate: 0.01
-  weight_file: "models/lstm_12hr_0d_01reg_v2"
-  file_path: "models/lstm_12hr_0d_01reg_v2"
+  weight_file: "models/model_02"
+  file_path: "models/model_02"
 preprocessing:
   subsample: false
   subsampling_rate: 1
