@@ -13,8 +13,8 @@ model:
   dropout: 0
   regularization: "l2"
   reg_rate: 0.01
-  weight_file: "models/model_01_v1"
-  file_path: "models/model_01_v1"
+  weight_file: "final_models/model_01_v1"
+  file_path: "final_models/model_01_v1"
 preprocessing:
   subsample: false
   subsampling_rate: 1
