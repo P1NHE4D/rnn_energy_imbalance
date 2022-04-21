@@ -1,4 +1,5 @@
-num_visualizations: 5
+num_visualizations: 10
+display_normed_vals: true
 dataset:
   train: "datasets/no1_train.csv"
   test: "datasets/no1_validation.csv"
@@ -12,8 +13,8 @@ model:
   dropout: 0
   regularization: "l2"
   reg_rate: 0.01
-  weight_file: "models/lstm_12hr_0d_01reg_v2"
-  file_path: "models/lstm_12hr_0d_01reg_v2"
+  weight_file: "models/model_01_v1"
+  file_path: "models/model_01_v1"
 preprocessing:
   subsample: false
   subsampling_rate: 1

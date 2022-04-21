@@ -45,11 +45,13 @@ def preprocess_data(config: dict, data: pd.DataFrame):
         data = add_imb_prev_day(data.copy(), subsampling_rate)
     if config.get("mean_imbalance", False):
         data = add_mean_imbalance(data.copy())
+
+    data = data.drop(["start_time", "date", "river"], axis=1)
+
     if config.get("normalize", False):
         print("Normalizing data...")
         data = normalize(data.copy())
 
-    data = data.drop(["start_time", "date", "river"], axis=1)
     return data
 
 

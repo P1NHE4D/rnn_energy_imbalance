@@ -16,20 +16,9 @@ def main(config_file):
     train_df.flow = -train_df.flow
     test_df.flow = -test_df.flow
 
-    # y = train_df.total.to_numpy() + train_df.flow.to_numpy()
-    # x = np.arange(0, len(y))
-    # t = time.time()
-    # tck = inpl.splrep(x, y)
-    # t2 = time.time()
-    # print("Duration: {}".format(t2 - t))
-    # plt.plot(x, y, 'b')
-    # ynew = inpl.splev(x, tck)
-    # plt.plot(x, ynew, 'g')
-    # plt.show()
-    # ydiff = y - ynew
-    # plt.plot(x, ydiff)
-    # plt.show()
-    # return
+    # store mean and std to scale back predictions if enabled
+    test_y_mean = test_df.y.mean()
+    test_y_std = test_df.y.std()
 
     train_df = preprocess_data(config.get("preprocessing", {}), train_df)
     test_df = preprocess_data(config.get("preprocessing", {}), test_df)
@@ -73,6 +62,12 @@ def main(config_file):
             forecasts.append(pred)
             y_true.append(y_test[idx])
             input_gt.append(np.nan)
+
+        if not config.get("display_normed_vals", True):
+            input_gt = np.array(input_gt) * test_y_std + test_y_mean
+            y_true = np.array(y_true) * test_y_std + test_y_mean
+            forecasts = np.array(forecasts) * test_y_std + test_y_mean
+
         t = list(range(len(y_true)))
         plt.plot(t, input_gt, color='#0048ff', label="hist")
         plt.plot(t, y_true, color='#ff9900', label="target")
