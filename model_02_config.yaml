@@ -1,4 +1,5 @@
-num_visualizations: 5
+num_visualizations: 10
+display_normed_vals: true
 dataset:
   train: "datasets/no1_train.csv"
   test: "datasets/no1_validation.csv"

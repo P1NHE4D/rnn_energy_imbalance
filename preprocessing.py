@@ -44,7 +44,7 @@ def preprocess_data(config: dict, data: pd.DataFrame):
     if config.get("imb_prev_day", False):
         data = add_imb_prev_day(data.copy(), subsampling_rate)
     if config.get("mean_imbalance", False):
-        data = add_mean_imbalance(data.copy())
+        data = add_mean_imbalance(data.copy(), subsampling_rate)
 
     data = data.drop(["start_time", "date", "river"], axis=1)
 
@@ -113,8 +113,13 @@ def add_imb_prev_day(data: pd.DataFrame, subsampling_rate):
     return data
 
 
-def add_mean_imbalance(data: pd.DataFrame):
+def add_mean_imbalance(data: pd.DataFrame, subsampling_rate):
+    step_size = 5 * subsampling_rate
+    steps_in_hour = int(60 / step_size)
+    periods = steps_in_hour * 24
     data["mean_imbalance"] = data.groupby("date")["y"].transform('mean')
+    data["mean_imbalance"] = data["mean_imbalance"].shift(periods)
+    data.loc[:, "mean_imbalance"] = data.loc[:, "mean_imbalance"].fillna(data.y.mean())
     return data
 
 
