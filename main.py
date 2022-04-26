@@ -11,6 +11,7 @@ def main(config_file):
     with open(config_file) as f:
         config = safe_load(f)
 
+    # load datasets
     train_df = pd.read_csv(config["dataset"]["train"])
     test_df = pd.read_csv(config["dataset"]["test"])
     train_df.flow = -train_df.flow
@@ -20,12 +21,15 @@ def main(config_file):
     test_y_mean = test_df.y.mean()
     test_y_std = test_df.y.std()
 
+    # preprocess data
     train_df = preprocess_data(config.get("preprocessing", {}), train_df)
     test_df = preprocess_data(config.get("preprocessing", {}), test_df)
 
-    x_train, y_train, _ = construct_dataset(train_df, config["dataset"]["input_steps"])
-    x_test, y_test, input_y_test = construct_dataset(test_df, config["dataset"]["input_steps"])
+    # construct dataset and split target from input data
+    x_train, y_train, input_y_train, train_indices = construct_dataset(train_df, config["dataset"]["input_steps"])
+    x_test, y_test, input_y_test, test_indices = construct_dataset(test_df, config["dataset"]["input_steps"])
 
+    # train model
     model_config = config.get("model", {})
     model = RNN(model_config)
     if not model.trained or model_config.get("force_retrain", False):
@@ -37,28 +41,49 @@ def main(config_file):
             plt.xlabel("Epochs")
             plt.ylabel("MSE")
             plt.show()
+
+    # evaluate model on the given test set
     model.evaluate(x=x_test, y=y_test)
 
     # visualization
     for _ in range(config.get("num_visualizations", 5)):
+
+        # get random sample (ndarray<steps, features>)
         idx = np.random.choice(np.arange(0, len(x_test)))
         sample = x_test[idx]
+
+        # get gt for all steps involved for visualization purposes
         input_gt = input_y_test[idx].tolist()
         forecasts = [np.nan for _ in range(len(input_gt) - 1)]
         y_true = [np.nan for _ in range(len(input_gt) - 1)]
+
+        # append last input ground truth to forecasts and y_true for a continuous line
         forecasts.append(input_gt[-1])
         y_true.append(input_gt[-1])
+
+        # get step size
         step_size = 5 * config["preprocessing"]["subsampling_rate"]
 
+        # predict imbalance using given sample
         pred = model(np.array([sample]))[0][0]
+
+        # append prediction and ground truth to lists used in the visualization
         forecasts.append(pred)
         y_true.append(y_test[idx])
         input_gt.append(np.nan)
+
         for _ in range(int(120 / step_size)):
+            # get following sequence
             idx += 1
             sample = x_test[idx]
-            sample[5] = pred
+
+            # replace previous_y with prediction in last step of the sample
+            sample[-1, test_indices["previous_y"]] = pred
+
+            # predict imbalance
             pred = model(np.array([sample]))[0][0]
+
+            # append prediction and ground truth to lists used for visualization
             forecasts.append(pred)
             y_true.append(y_test[idx])
             input_gt.append(np.nan)

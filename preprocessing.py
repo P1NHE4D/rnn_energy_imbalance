@@ -5,6 +5,7 @@ from scipy import interpolate
 
 def construct_dataset(data, input_steps):
     target_df = data.pop("y")
+    indices = {name: i for i, name in enumerate(data.columns)}
     input_data_target = target_df[:-1].to_numpy()
     input_data = data[:-1].to_numpy()
     targets = target_df[input_steps:].to_numpy()
@@ -16,7 +17,7 @@ def construct_dataset(data, input_steps):
         x.append(input_data[i:i+input_steps])
         input_y.append(input_data_target[i:i+input_steps])
         y.append(targets[i])
-    return np.array(x), np.array(y), np.array(input_y)
+    return np.array(x), np.array(y), np.array(input_y), indices
 
 
 def preprocess_data(config: dict, data: pd.DataFrame):
