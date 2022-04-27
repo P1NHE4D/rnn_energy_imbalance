@@ -66,6 +66,7 @@ def main(config_file):
 
         # predict imbalance using given sample
         pred = model(np.array([sample]))[0][0]
+        forecast_count = 1
 
         # append prediction and ground truth to lists used in the visualization
         forecasts.append(pred)
@@ -78,10 +79,11 @@ def main(config_file):
             sample = x_test[idx]
 
             # replace previous_y with prediction in last step of the sample
-            sample[-1, test_indices["previous_y"]] = pred
+            sample[-forecast_count:, test_indices["previous_y"]] = forecasts[-forecast_count:]
 
             # predict imbalance
             pred = model(np.array([sample]))[0][0]
+            forecast_count += 1
 
             # append prediction and ground truth to lists used for visualization
             forecasts.append(pred)

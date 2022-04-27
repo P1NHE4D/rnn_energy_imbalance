@@ -8,7 +8,7 @@ dataset:
 model:
   visualize: true
   learning_rate: 0.0001
-  force_retrain: true
+  force_retrain: false
   epochs: 50
   dropout: 0
   regularization: "l2"
