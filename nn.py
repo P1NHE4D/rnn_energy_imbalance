@@ -1,6 +1,6 @@
 from keras.callbacks import Callback
 from keras.models import Model, Sequential
-from keras.layers import Dense, LSTM
+from keras.layers import Dense, LSTM, SimpleRNN
 from keras.regularizers import L1, L2
 from tensorflow import keras
 
@@ -29,7 +29,7 @@ class RNN(Model):
         reg_type = config.get("regularization", None)
         reg = L1(reg_rate) if reg_type == "l1" else L2(reg_rate) if reg_type == "l2" else None
         layers = [
-            LSTM(32, dropout=self.dropout, kernel_regularizer=reg),
+            LSTM(64, dropout=self.dropout, kernel_regularizer=reg),
             Dense(1)
         ]
         self.model = Sequential(layers)

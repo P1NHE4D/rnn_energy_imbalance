@@ -1,2 +1,2 @@
-model_checkpoint_path: "model_03"
-all_model_checkpoint_paths: "model_03"
+model_checkpoint_path: "model_17lstm"
+all_model_checkpoint_paths: "model_17lstm"

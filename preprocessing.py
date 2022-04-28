@@ -8,7 +8,8 @@ def construct_dataset(data, input_steps):
     indices = {name: i for i, name in enumerate(data.columns)}
     input_data_target = target_df[:-1].to_numpy()
     input_data = data[:-1].to_numpy()
-    targets = target_df[input_steps:].to_numpy()
+    # TODO: FIX - 
+    targets = target_df[input_steps-1:].to_numpy()
 
     x = []
     y = []

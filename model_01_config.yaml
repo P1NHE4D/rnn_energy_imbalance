@@ -3,27 +3,27 @@ display_normed_vals: true
 dataset:
   train: "datasets/no1_train.csv"
   test: "datasets/no1_validation.csv"
-  input_steps: 144
-  batch_size: 32
+  input_steps: 48
+  batch_size: 256
 model:
   visualize: true
-  learning_rate: 0.0001
+  learning_rate: 0.001
   force_retrain: false
-  epochs: 50
+  epochs: 20
   dropout: 0
   regularization: "l2"
-  reg_rate: 0.01
-  weight_file: "models/model_03"
-  file_path: "models/model_03"
+  reg_rate: 0.1
+  weight_file: "models/model_18lstm_48t"
+  file_path: "models/model_18lstm_48t"
 preprocessing:
   subsample: false
   subsampling_rate: 1
   clamp_values: true
-  avoid_structural_imbalance: true
+  avoid_structural_imbalance: false
   time_of_day: true
-  time_of_week: true
-  time_of_year: true
+  time_of_week: false
+  time_of_year: false
   prev_imbalance: true
-  imb_prev_day: true
-  mean_imbalance: true
+  imb_prev_day: false
+  mean_imbalance: false
   normalize: true
