@@ -1,5 +1,6 @@
 num_visualizations: 10
 display_normed_vals: true
+store_config: "model_configs/model_01"
 dataset:
   train: "datasets/no1_train.csv"
   test: "datasets/no1_validation.csv"
@@ -11,8 +12,11 @@ model:
   force_retrain: false
   epochs: 50
   dropout: 0
-  regularization: "l2"
-  reg_rate: 0.01
+  #regularization: "l2"
+  #reg_rate: 0.01
+  hidden_layers: [
+    ["lstm", 64, "tanh"]
+  ]
   weight_file: "models/model_03"
   file_path: "models/model_03"
 preprocessing:

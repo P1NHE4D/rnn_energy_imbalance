@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from yaml import safe_load
+from yaml import safe_load, safe_dump
 from preprocessing import preprocess_data, construct_dataset
 from nn import RNN, LossHistory
 import matplotlib.pyplot as plt
@@ -10,6 +10,9 @@ import argparse
 def main(config_file):
     with open(config_file) as f:
         config = safe_load(f)
+    if config.get("store_config", None) is not None:
+        with open(config.get("store_config", None) + ".yaml", 'w') as f:
+            safe_dump(config, f, default_flow_style=False)
 
     # load datasets
     train_df = pd.read_csv(config["dataset"]["train"])

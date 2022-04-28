@@ -1,6 +1,6 @@
 from keras.callbacks import Callback
 from keras.models import Model, Sequential
-from keras.layers import Dense, LSTM
+from keras.layers import Dense, LSTM, SimpleRNN
 from keras.regularizers import L1, L2
 from tensorflow import keras
 
@@ -22,16 +22,12 @@ class RNN(Model):
     def __init__(self, config, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.learning_rate = config.get("learning_rate", 0.01)
-        self.dropout = config.get("dropout", 0)
         self.weight_file = config.get("weight_file", "")
         self.trained = False
         reg_rate = config.get("reg_rate", 0.01)
         reg_type = config.get("regularization", None)
         reg = L1(reg_rate) if reg_type == "l1" else L2(reg_rate) if reg_type == "l2" else None
-        layers = [
-            LSTM(32, dropout=self.dropout, kernel_regularizer=reg),
-            Dense(1)
-        ]
+        layers = get_layers(config.get("hidden_layers"), dropout=config.get("dropout", 0), reg=reg)
         self.model = Sequential(layers)
         optimizer = keras.optimizers.Adam(learning_rate=self.learning_rate)
         self.compile(
@@ -50,3 +46,20 @@ class RNN(Model):
 
     def get_config(self):
         super().get_config()
+
+
+def get_layers(layer_config, dropout, reg):
+    layers = []
+    for t, nodes, activation in layer_config:
+        if t == "lstm":
+            layers.append(
+                LSTM(nodes, activation=activation, dropout=dropout, kernel_regularizer=reg)
+            )
+        elif t == "simple_rnn":
+            layers.append(
+                SimpleRNN(nodes, activation=activation, dropout=dropout, kernel_regularizer=reg)
+            )
+        else:
+            raise ValueError("Unknown layer type: {}".format(t))
+    layers.append(Dense(1))
+    return layers

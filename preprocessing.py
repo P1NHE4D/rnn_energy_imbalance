@@ -6,9 +6,9 @@ from scipy import interpolate
 def construct_dataset(data, input_steps):
     target_df = data.pop("y")
     indices = {name: i for i, name in enumerate(data.columns)}
-    input_data_target = target_df[:-1].to_numpy()
-    input_data = data[:-1].to_numpy()
-    targets = target_df[input_steps:].to_numpy()
+    input_data_target = target_df.to_numpy()
+    input_data = data.to_numpy()
+    targets = target_df[input_steps-1:].to_numpy()
 
     x = []
     y = []
@@ -71,8 +71,8 @@ def subsample(data: pd.DataFrame, subsampling_rate: int):
 
 def clamp(data: pd.DataFrame):
     l, u = data.quantile([0.005, 0.995])["y"]
-    new_val = data.loc[(data.y >= l) | (data.y <= u), "y"].mean()
-    data.loc[(data.y < l) | (data.y > u), "y"] = new_val
+    data.loc[(data.y < l), "y"] = l
+    data.loc[(data.y > u), "y"] = u
     return data
 
 
@@ -90,11 +90,14 @@ def add_time_features(
     year = 365.25 * day
 
     if time_of_day:
-        data['time_of_day'] = np.sin(timestamp_s * (2 * np.pi / day))
+        data['time_of_day_sin'] = np.sin(timestamp_s * (2 * np.pi / day))
+        data['time_of_day_cos'] = np.cos(timestamp_s * (2 * np.pi / day))
     if time_of_week:
-        data['time_of_week'] = np.sin(timestamp_s * (2 * np.pi / week))
+        data['time_of_week_sin'] = np.sin(timestamp_s * (2 * np.pi / week))
+        data['time_of_week_cos'] = np.cos(timestamp_s * (2 * np.pi / week))
     if time_of_year:
-        data['time_of_year'] = np.sin(timestamp_s * (2 * np.pi / year))
+        data['time_of_year_sin'] = np.sin(timestamp_s * (2 * np.pi / year))
+        data['time_of_year_cos'] = np.cos(timestamp_s * (2 * np.pi / year))
 
     return data
 
