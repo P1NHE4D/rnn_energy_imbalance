@@ -57,12 +57,13 @@ def main(config_file):
 
         # get gt for all steps involved for visualization purposes
         input_gt = input_y_test[idx].tolist()
-        forecasts = [np.nan for _ in range(len(input_gt) - 1)]
-        y_true = [np.nan for _ in range(len(input_gt) - 1)]
+        input_gt[-1] = np.nan
+        forecasts = [np.nan for _ in range(len(input_gt) - 2)]
+        y_true = [np.nan for _ in range(len(input_gt) - 2)]
 
         # append last input ground truth to forecasts and y_true for a continuous line
-        forecasts.append(input_gt[-1])
-        y_true.append(input_gt[-1])
+        forecasts.append(input_gt[-2])
+        y_true.append(input_gt[-2])
 
         # get step size
         step_size = 5 * config["preprocessing"]["subsampling_rate"]
@@ -74,7 +75,6 @@ def main(config_file):
         # append prediction and ground truth to lists used in the visualization
         forecasts.append(pred)
         y_true.append(y_test[idx])
-        input_gt.append(np.nan)
 
         for _ in range(int(120 / step_size)):
             # get following sequence
@@ -98,10 +98,10 @@ def main(config_file):
             y_true = np.array(y_true) * test_y_std + test_y_mean
             forecasts = np.array(forecasts) * test_y_std + test_y_mean
 
-        t = list(range(len(y_true)))
-        plt.plot(t, input_gt, color='#0048ff', label="hist")
-        plt.plot(t, y_true, color='#ff9900', label="target")
-        plt.plot(t, forecasts, color='#00910a', label="pred")
+        t = np.array(list(range(len(y_true))), dtype='object')
+        plt.plot(t, np.array(input_gt, dtype='object'), color='#0048ff', label="hist")
+        plt.plot(t, np.array(y_true, dtype='object'), color='#ff9900', label="target")
+        plt.plot(t, np.array(forecasts, dtype='object'), color='#00910a', label="pred")
         plt.legend()
         plt.xlabel("Timestep")
         plt.ylabel("Normalized Imbalance")

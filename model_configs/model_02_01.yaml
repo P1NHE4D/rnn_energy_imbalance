@@ -1,0 +1,46 @@
+dataset:
+  batch_size: 256
+  input_steps: 144
+  test: datasets/no1_validation.csv
+  train: datasets/no1_train.csv
+display_normed_vals: true
+model:
+  dropout: 0
+  epochs: 20
+  file_path: models/model_02_01
+  force_retrain: false
+  hidden_layers:
+  - - lstm
+    - 128
+    - tanh
+  learning_rate: 0.001
+  reg_rate: 0.01
+  regularization: l2
+  visualize: true
+  weight_file: models/model_02_01
+num_visualizations: 20
+preprocessing:
+  avoid_structural_imbalance: true
+  clamp_values: true
+  features:
+    flow: true
+    hydro: false
+    imb_prev_day: true
+    mean_imbalance: true
+    micro: false
+    prev_imbalance: true
+    river: false
+    sys_reg: true
+    thermal: true
+    time_of_day_cos: false
+    time_of_day_sin: false
+    time_of_week_cos: false
+    time_of_week_sin: false
+    time_of_year_cos: true
+    time_of_year_sin: true
+    total: false
+    wind: false
+  normalize: true
+  subsample: false
+  subsampling_rate: 1
+store_config: model_configs/model_02_01

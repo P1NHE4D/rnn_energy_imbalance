@@ -1,33 +1,45 @@
-num_visualizations: 10
+num_visualizations: 20
 display_normed_vals: true
-store_config: "model_configs/model_01"
+store_config: "model_configs/model_02_05"
 dataset:
   train: "datasets/no1_train.csv"
   test: "datasets/no1_validation.csv"
   input_steps: 144
-  batch_size: 32
+  batch_size: 256
 model:
   visualize: true
-  learning_rate: 0.0001
+  learning_rate: 0.001
   force_retrain: false
-  epochs: 50
+  epochs: 20
   dropout: 0
-  #regularization: "l2"
-  #reg_rate: 0.01
+  regularization: "l2"
+  reg_rate: 0.01
   hidden_layers: [
-    ["lstm", 64, "tanh"]
+    ["lstm", 256, "tanh"]
   ]
-  weight_file: "models/model_03"
-  file_path: "models/model_03"
+  weight_file: "models/model_02_05"
+  file_path: "models/model_02_05"
 preprocessing:
   subsample: false
   subsampling_rate: 1
+  normalize: true
   clamp_values: true
   avoid_structural_imbalance: true
-  time_of_day: true
-  time_of_week: true
-  time_of_year: true
-  prev_imbalance: true
-  imb_prev_day: true
-  mean_imbalance: true
-  normalize: true
+  features:
+    flow: true
+    hydro: false
+    imb_prev_day: true
+    mean_imbalance: true
+    micro: false
+    prev_imbalance: true
+    river: false
+    sys_reg: true
+    thermal: true
+    time_of_day_cos: false
+    time_of_day_sin: false
+    time_of_week_cos: false
+    time_of_week_sin: false
+    time_of_year_cos: true
+    time_of_year_sin: true
+    total: false
+    wind: false

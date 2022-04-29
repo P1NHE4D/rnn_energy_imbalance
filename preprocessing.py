@@ -34,20 +34,15 @@ def preprocess_data(config: dict, data: pd.DataFrame):
         print("Computing and subtracting structural imbalance...")
         data = avoid_structural_imbalance(data.copy())
     print("Adding selected features...")
-    data = add_time_features(
-        data.copy(),
-        config.get("time_of_day", False),
-        config.get("time_of_week", False),
-        config.get("time_of_year", False)
-    )
-    if config.get("prev_imbalance", False):
-        data = add_prev_imb(data.copy())
-    if config.get("imb_prev_day", False):
-        data = add_imb_prev_day(data.copy(), subsampling_rate)
-    if config.get("mean_imbalance", False):
-        data = add_mean_imbalance(data.copy(), subsampling_rate)
+    data = add_time_features(data.copy())
+    data = add_prev_imb(data.copy())
+    data = add_imb_prev_day(data.copy(), subsampling_rate)
+    data = add_mean_imbalance(data.copy(), subsampling_rate)
+    drop_features = [feat for feat, enabled in config.get("features", {}).items() if not enabled]
+    print("Dropping: {}".format(drop_features))
 
-    data = data.drop(["start_time", "date", "river"], axis=1)
+    data = data.drop(["start_time", "date"], axis=1)
+    data = data.drop(drop_features, axis=1)
 
     if config.get("normalize", False):
         print("Normalizing data...")
@@ -78,9 +73,6 @@ def clamp(data: pd.DataFrame):
 
 def add_time_features(
         data: pd.DataFrame,
-        time_of_day=False,
-        time_of_week=False,
-        time_of_year=False
 ):
     start_time = pd.to_datetime(data['start_time'], format='%Y-%m-%d  %H:%M:%S')
     timestamp_s = start_time.map(pd.Timestamp.timestamp)
@@ -89,15 +81,12 @@ def add_time_features(
     week = 7 * day
     year = 365.25 * day
 
-    if time_of_day:
-        data['time_of_day_sin'] = np.sin(timestamp_s * (2 * np.pi / day))
-        data['time_of_day_cos'] = np.cos(timestamp_s * (2 * np.pi / day))
-    if time_of_week:
-        data['time_of_week_sin'] = np.sin(timestamp_s * (2 * np.pi / week))
-        data['time_of_week_cos'] = np.cos(timestamp_s * (2 * np.pi / week))
-    if time_of_year:
-        data['time_of_year_sin'] = np.sin(timestamp_s * (2 * np.pi / year))
-        data['time_of_year_cos'] = np.cos(timestamp_s * (2 * np.pi / year))
+    data['time_of_day_sin'] = np.sin(timestamp_s * (2 * np.pi / day))
+    data['time_of_day_cos'] = np.cos(timestamp_s * (2 * np.pi / day))
+    data['time_of_week_sin'] = np.sin(timestamp_s * (2 * np.pi / week))
+    data['time_of_week_cos'] = np.cos(timestamp_s * (2 * np.pi / week))
+    data['time_of_year_sin'] = np.sin(timestamp_s * (2 * np.pi / year))
+    data['time_of_year_cos'] = np.cos(timestamp_s * (2 * np.pi / year))
 
     return data
 
