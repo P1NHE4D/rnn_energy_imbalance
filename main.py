@@ -37,12 +37,15 @@ def main(config_file):
     model = RNN(model_config)
     if not model.trained or model_config.get("force_retrain", False):
         history = LossHistory()
-        model.fit(x=x_train, y=y_train, epochs=model_config.get("epochs", 1), batch_size=config["dataset"]["batch_size"], callbacks=[history])
+        model.fit(x=x_train, y=y_train, validation_data=(x_test, y_test), epochs=model_config.get("epochs", 1), batch_size=config["dataset"]["batch_size"], callbacks=[history])
         model.save_weights(model_config.get("file_path", "models/rnn"))
         if model_config.get("visualize", False):
-            plt.plot(np.arange(1, history.epochs + 1), history.losses, color='#0048ff')
+            plt.plot(np.arange(1, history.epochs + 1), history.losses, color='#0048ff', label="Train")
+            if len(history.val_losses) != 0:
+                plt.plot(np.arange(1, history.epochs + 1), history.val_losses, color='#ff0000', label="Val")
             plt.xlabel("Epochs")
             plt.ylabel("MSE")
+            plt.legend()
             plt.show()
 
     # evaluate model on the given test set

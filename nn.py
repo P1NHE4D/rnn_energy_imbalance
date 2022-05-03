@@ -10,10 +10,13 @@ class LossHistory(Callback):
     def __init__(self):
         super().__init__()
         self.losses = []
+        self.val_losses = []
         self.epochs = 0
 
     def on_epoch_end(self, epoch, logs=None):
         self.losses.append(logs.get('loss'))
+        if 'val_loss' in logs.keys():
+            self.val_losses.append(logs.get('val_loss'))
         self.epochs += 1
 
 
