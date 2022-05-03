@@ -53,7 +53,7 @@ def main(config_file):
 
         # get random sample (ndarray<steps, features>)
         idx = np.random.choice(np.arange(0, len(x_test)))
-        sample = x_test[idx]
+        sample = x_test[idx].copy()
 
         # get gt for all steps involved for visualization purposes
         input_gt = input_y_test[idx].tolist()
@@ -79,7 +79,7 @@ def main(config_file):
         for _ in range(int(120 / step_size)):
             # get following sequence
             idx += 1
-            sample = x_test[idx]
+            sample = x_test[idx].copy()
 
             # replace previous_y with prediction in last step of the sample
             sample[-forecast_count:, test_indices["previous_y"]] = forecasts[-forecast_count:]

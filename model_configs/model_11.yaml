@@ -44,3 +44,4 @@ preprocessing:
   subsample: false
   subsampling_rate: 1
 store_config: model_configs/model_11
+# number of okay-good models out of 40: 18

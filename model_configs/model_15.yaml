@@ -44,3 +44,4 @@ preprocessing:
   subsample: false
   subsampling_rate: 1
 store_config: model_configs/model_15
+# number of good predictions out of 40: 14

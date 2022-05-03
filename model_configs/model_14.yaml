@@ -44,3 +44,4 @@ preprocessing:
   subsample: false
   subsampling_rate: 1
 store_config: model_configs/model_14
+# num of good visualizations out of 40: 15
