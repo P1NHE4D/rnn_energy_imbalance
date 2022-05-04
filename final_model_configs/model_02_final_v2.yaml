@@ -12,16 +12,16 @@ model:
   epochs: 20
   dropout: 0
   regularization: "l2"
-  reg_rate: 0.01
+  reg_rate: 0.1
   hidden_layers: [
     ["lstm", 128, "tanh"]
   ]
-  weight_file: "final_models/model_17"
+  weight_file: "final_models/model_02_02"
 preprocessing:
   subsampling_rate: 1
   normalize: true
   clamp_values: true
-  avoid_structural_imbalance: false
+  avoid_structural_imbalance: true
   features:
     flow: true
     hydro: true
