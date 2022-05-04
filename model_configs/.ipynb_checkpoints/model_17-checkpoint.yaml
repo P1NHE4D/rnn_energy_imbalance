@@ -7,19 +7,20 @@ display_normed_vals: true
 model:
   dropout: 0
   epochs: 20
+  file_path: models/model_17
   force_retrain: false
   hidden_layers:
   - - lstm
     - 128
     - tanh
   learning_rate: 0.001
-  reg_rate: 0.1
+  reg_rate: 0.01
   regularization: l2
   visualize: true
-  weight_file: models/model_02_02
-num_visualizations: 5
+  weight_file: models/model_17
+num_visualizations: 20
 preprocessing:
-  avoid_structural_imbalance: true
+  avoid_structural_imbalance: false
   clamp_values: true
   features:
     flow: true
@@ -40,5 +41,9 @@ preprocessing:
     total: true
     wind: true
   normalize: true
+  subsample: false
   subsampling_rate: 1
-store_config: model_configs/model_02_02
+store_config: model_configs/model_17
+# number of good predictions out of 20: 11
+# number of good predictions out of 40: 21
+# second run: 24
