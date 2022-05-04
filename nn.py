@@ -22,15 +22,25 @@ class LossHistory(Callback):
 
 class RNN(Model):
 
-    def __init__(self, config, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.learning_rate = config.get("learning_rate", 0.01)
-        self.weight_file = config.get("weight_file", "")
+    def __init__(
+            self,
+            hidden_layers=None,
+            learning_rate=0.01,
+            reg_rate=0.01,
+            regularization=None,
+            dropout=0,
+            weight_file="",
+            **kwargs
+    ):
+        super().__init__()
+        self.learning_rate = learning_rate
+        self.weight_file = weight_file
         self.trained = False
-        reg_rate = config.get("reg_rate", 0.01)
-        reg_type = config.get("regularization", None)
-        reg = L1(reg_rate) if reg_type == "l1" else L2(reg_rate) if reg_type == "l2" else None
-        layers = get_layers(config.get("hidden_layers"), dropout=config.get("dropout", 0), reg=reg)
+        self.history = LossHistory()
+        reg = L1(reg_rate) if regularization == "l1" else L2(reg_rate) if regularization == "l2" else None
+        if hidden_layers is None:
+            hidden_layers = [["lstm", 64, "tanh"]]
+        layers = get_layers(hidden_layers, dropout=dropout, reg=reg)
         self.model = Sequential(layers)
         optimizer = keras.optimizers.Adam(learning_rate=self.learning_rate)
         self.compile(

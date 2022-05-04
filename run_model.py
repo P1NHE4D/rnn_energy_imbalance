@@ -1,23 +1,16 @@
 import numpy as np
 import pandas as pd
-from yaml import safe_load, safe_dump
+from matplotlib import pyplot as plt
+from yaml import safe_load
+
+from nn import RNN
 from preprocessing import preprocess_data, TimeseriesDataset
-from nn import RNN, LossHistory
-import matplotlib.pyplot as plt
-import argparse
 
 
 def main(config_file):
     with open(config_file) as f:
         config = safe_load(f)
-    if config.get("store_config", None) is not None:
-        with open(config.get("store_config", None) + ".yaml", 'w') as f:
-            safe_dump(config, f, default_flow_style=False)
-
-    # load datasets
-    train_df = pd.read_csv(config["dataset"]["train"])
     test_df = pd.read_csv(config["dataset"]["test"])
-    train_df.flow = -train_df.flow
     test_df.flow = -test_df.flow
 
     # store mean and std to scale back predictions if enabled
@@ -26,34 +19,19 @@ def main(config_file):
 
     # preprocess data
     preprocessing_config = config.get("preprocessing", {})
-    train_df = preprocess_data(train_df, **preprocessing_config)
     test_df = preprocess_data(test_df, **preprocessing_config)
 
-    # construct dataset and split target from input data
-    train = TimeseriesDataset(train_df, config["dataset"]["input_steps"])
+    # construct dataset
     test = TimeseriesDataset(test_df, config["dataset"]["input_steps"])
 
-    # train model
+    # setup model
     model_config = config.get("model", {})
     model = RNN(**model_config)
-    if not model.trained or model_config.get("force_retrain", False):
-        history = LossHistory()
-        model.fit(x=train.x, y=train.y, validation_data=(test.x, test.y), epochs=model_config.get("epochs", 1),
-                  batch_size=config["dataset"]["batch_size"], callbacks=[history])
-        model.save_weights(model_config.get("file_path", "models/rnn"))
-        if model_config.get("visualize", False):
-            plt.plot(np.arange(1, history.epochs + 1), history.losses, color='#0048ff', label="Train")
-            if len(history.val_losses) != 0:
-                plt.plot(np.arange(1, history.epochs + 1), history.val_losses, color='#ff0000', label="Val")
-            plt.xlabel("Epochs")
-            plt.ylabel("MSE")
-            plt.legend()
-            plt.show()
 
-    # evaluate model on the given test set
+    # evaluate test set
     model.evaluate(x=test.x, y=test.y)
 
-    # visualization
+    # predict and visualize 2-hour forecast
     for _ in range(config.get("num_visualizations", 5)):
 
         # get random sample (ndarray<steps, features>)
@@ -114,7 +92,4 @@ def main(config_file):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('config', type=str, help='Config file')
-    args = parser.parse_args()
-    main(args.config)
+    main("config.yaml")

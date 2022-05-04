@@ -1,6 +1,18 @@
+from dataclasses import dataclass
+
 import numpy as np
 import pandas as pd
 from scipy import interpolate
+
+
+class TimeseriesDataset:
+
+    def __init__(self, data, input_steps):
+        x, y, input_y, indices = construct_dataset(data, input_steps)
+        self.x: np.ndarray = x
+        self.y: np.ndarray = y
+        self.input_y: np.ndarray = input_y
+        self.indices: dict = indices
 
 
 def construct_dataset(data, input_steps):
@@ -8,55 +20,66 @@ def construct_dataset(data, input_steps):
     indices = {name: i for i, name in enumerate(data.columns)}
     input_data_target = target_df.to_numpy()
     input_data = data.to_numpy()
-    targets = target_df[input_steps-1:].to_numpy()
+    targets = target_df[input_steps - 1:].to_numpy()
 
     x = []
     y = []
     input_y = []
     for i in range(len(targets)):
-        x.append(input_data[i:i+input_steps])
-        input_y.append(input_data_target[i:i+input_steps])
+        x.append(input_data[i:i + input_steps])
+        input_y.append(input_data_target[i:i + input_steps])
         y.append(targets[i])
     return np.array(x), np.array(y), np.array(input_y), indices
 
 
-def preprocess_data(config: dict, data: pd.DataFrame):
+def preprocess_data(
+        data: pd.DataFrame,
+        subsampling_rate=1,
+        clamp_values=False,
+        avoid_structural_imbalance=False,
+        features=None,
+        normalize=False,
+        **kwargs
+):
+    if features is None:
+        features = {}
+
     data["date"] = pd.to_datetime(data['start_time'], format='%Y-%m-%d  %H:%M:%S').dt.date
 
-    subsampling_rate = config.get("subsampling_rate", 1)
-    if config.get("subsample", False):
+    if subsampling_rate > 1:
         print("Subsampling...")
         data = subsample(data.copy(), subsampling_rate)
-    if config.get("clamp_values", False):
+    if clamp_values:
         print("Clamping values...")
         data = clamp(data.copy())
-    if config.get("avoid_structural_imbalance", False):
+    if avoid_structural_imbalance:
         print("Computing and subtracting structural imbalance...")
-        data = avoid_structural_imbalance(data.copy())
+        data = subtract_structural_imbalance(data.copy())
     print("Adding selected features...")
     data = add_time_features(data.copy())
     data = add_prev_imb(data.copy())
     data = add_imb_prev_day(data.copy(), subsampling_rate)
     data = add_mean_imbalance(data.copy(), subsampling_rate)
-    drop_features = [feat for feat, enabled in config.get("features", {}).items() if not enabled]
+    drop_features = [feat for feat, enabled in features.items() if not enabled]
     print("Dropping: {}".format(drop_features))
 
     data = data.drop(["start_time", "date"], axis=1)
     data = data.drop(drop_features, axis=1)
 
-    if config.get("normalize", False):
+    if normalize:
         print("Normalizing data...")
-        data = normalize(data.copy())
+        data = normalize_data(data.copy())
 
     return data
 
 
-def avoid_structural_imbalance(data: pd.DataFrame):
+def subtract_structural_imbalance(data: pd.DataFrame):
     production = data.total.to_numpy() + data.flow.to_numpy()
     x = np.arange(0, len(production))
     tck = interpolate.splrep(x, production)
     smoothed_production = interpolate.splev(x, tck)
-    data.y -= smoothed_production
+    structural_imbalance = production - smoothed_production
+    data.y -= structural_imbalance
     return data
 
 
@@ -116,5 +139,5 @@ def add_mean_imbalance(data: pd.DataFrame, subsampling_rate):
     return data
 
 
-def normalize(data: pd.DataFrame):
+def normalize_data(data: pd.DataFrame):
     return (data - data.mean()) / data.std()
